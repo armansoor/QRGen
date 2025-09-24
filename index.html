@@ -1,147 +1,54 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>KPOP QR — Designer K‑POP Themed QR Generator</title>
-  <meta name="description" content="Generate stylish K‑POP themed QR codes with presets, gradients, logos and downloads (SVG/PNG)." />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KPOP QR Code Generator</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="badge">K</div>
-        <div>
-          <h1>KPOP QR</h1>
-          <p class="tag">fandom-ready, scannable, and stylish</p>
-        </div>
+  <header>
+    <h1>KPOP QR Code Generator</h1>
+    <p>Generate stylish QR codes from text, links, images, videos & more ✨</p>
+  </header>
+
+  <main class="container">
+    <section class="input-section">
+      <form id="qrForm">
+        <label for="qrType">Select Input Type:</label>
+        <select id="qrType" required>
+          <option value="text">Text</option>
+          <option value="url">Link / URL</option>
+          <option value="image">Image</option>
+          <option value="video">Video</option>
+          <option value="file">File</option>
+          <option value="wifi">WiFi</option>
+          <option value="contact">Contact (vCard)</option>
+          <option value="social">Social Profile</option>
+        </select>
+
+        <div id="dynamicInputs"></div>
+
+        <button type="submit" class="btn-generate">✨ Generate QR ✨</button>
+      </form>
+    </section>
+
+    <section class="output-section">
+      <div id="qrContainer" class="qr-box">
+        <p class="placeholder">Your KPOP QR Code will appear here 💜</p>
       </div>
-      <nav class="presets" aria-label="Theme presets">
-        <button class="pill" data-preset="pastel">Pastel Cute</button>
-        <button class="pill" data-preset="neon">Neon Dance</button>
-        <button class="pill" data-preset="retro">Retro Glitter</button>
-      </nav>
-    </header>
+      <div id="downloadBtns" class="download-buttons hidden">
+        <button id="downloadPNG">Download PNG</button>
+        <button id="downloadSVG">Download SVG</button>
+      </div>
+    </section>
+  </main>
 
-    <main class="layout">
-      <section class="left card">
-        <form id="controls" class="controls" onsubmit="return false;">
-          <label>Data / URL
-            <input id="dataInput" type="text" placeholder="https://example.com" value="https://example.com" />
-          </label>
+  <footer>
+    <p>Made with 💖 for KPOP fans</p>
+  </footer>
 
-          <div class="two">
-            <label>Preset style
-              <select id="presetSelect">
-                <option value="custom">Custom</option>
-                <option value="pastel">Pastel Cute</option>
-                <option value="neon">Neon Dance</option>
-                <option value="retro">Retro Glitter</option>
-              </select>
-            </label>
-            <label>Preview size
-              <select id="previewSize"><option>360</option><option>280</option><option>420</option></select>
-            </label>
-          </div>
-
-          <div class="two">
-            <label>Module shape
-              <select id="dotStyle">
-                <option value="dots">Dots</option>
-                <option value="rounded">Rounded</option>
-                <option value="square">Square</option>
-              </select>
-            </label>
-            <label>Corner (eyes)
-              <select id="cornerStyle">
-                <option value="square">Square</option>
-                <option value="dot">Dot</option>
-              </select>
-            </label>
-          </div>
-
-          <label>Gradient start / end
-            <div class="colors">
-              <input id="g1" type="color" value="#ff7cc7" />
-              <input id="g2" type="color" value="#7c6bff" />
-              <select id="gradDir">
-                <option value="0">←</option>
-                <option value="45">↖︎</option>
-                <option value="90">↑</option>
-              </select>
-            </div>
-          </label>
-
-          <label>Logo (optional — paste image URL)
-            <input id="logo" type="text" placeholder="https://.../logo.png" />
-          </label>
-
-          <div class="toggles">
-            <label><input id="petal" type="checkbox"/> Petal morph (K‑pop flair)</label>
-            <label><input id="frame" type="checkbox" checked/> Fancy frame</label>
-          </div>
-
-          <div class="two">
-            <label>Error correction
-              <select id="ecLevel"><option value="H">H (High)</option><option value="Q">Q</option><option value="M">M</option></select>
-            </label>
-            <label>Download
-              <div class="btn-row">
-                <button id="generateBtn" class="btn primary">Generate</button>
-                <button id="downloadPNG" class="btn">PNG</button>
-                <button id="downloadSVG" class="btn">SVG</button>
-              </div>
-            </label>
-          </div>
-
-          <details class="info">
-            <summary>Design tips</summary>
-            <ul>
-              <li>Keep contrast high. Use H error correction if you overlay logos.</li>
-              <li>Limit logo coverage to ~25% of QR center to remain scannable.</li>
-              <li>Test on multiple devices — colors and print affect scanning.</li>
-            </ul>
-          </details>
-        </form>
-      </section>
-
-      <section class="right card">
-        <div class="preview-area">
-          <div id="qr-wrap" class="qr-wrap" aria-live="polite"></div>
-          <div class="meta">
-            <div class="badge-line">
-              <span class="pill small">KPOP</span>
-              <span id="currentPreset" class="muted">Custom</span>
-            </div>
-            <div class="actions">
-              <label>Preset: <select id="uiPreset"><option>Pastel Cute</option><option>Neon Dance</option><option>Retro Glitter</option></select></label>
-              <label>Preview scale <input id="scaleRange" type="range" min="0.5" max="1.6" step="0.1" value="1"/></label>
-            </div>
-            <div class="example-cta">Scan me — fan invite ✨</div>
-          </div>
-        </div>
-
-        <div class="examples card small-cards">
-          <h3>Quick presets</h3>
-          <div class="preset-grid">
-            <button class="preset-tile" data-preset="pastel">Pastel Cute</button>
-            <button class="preset-tile" data-preset="neon">Neon Dance</button>
-            <button class="preset-tile" data-preset="retro">Retro Glitter</button>
-          </div>
-        </div>
-
-      </section>
-    </main>
-
-    <footer class="foot">
-      <small>Built for K‑POP fans — keep testing for prints. Created with <a href="https://github.com/kozakdenys/qr-code-styling" target="_blank">qr-code-styling</a>.</small>
-    </footer>
-  </div>
-
-  <!-- Libraries -->
-  <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
