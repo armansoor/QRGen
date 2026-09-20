@@ -5,6 +5,7 @@ const qrContainer = document.getElementById("qrContainer");
 const downloadBtns = document.getElementById("downloadBtns");
 
 let qr;
+let currentTheme = kpopThemes[0];
 
 // Preset KPOP themes
 const kpopThemes = [
@@ -77,6 +78,7 @@ function generateQR(data) {
 
   // Pick random KPOP theme
   const theme = kpopThemes[Math.floor(Math.random() * kpopThemes.length)];
+  currentTheme = theme;
 
   qr = new QRCode(qrContainer, {
     text: data,
@@ -110,13 +112,28 @@ document.getElementById("downloadPNG").addEventListener("click", () => {
 });
 
 document.getElementById("downloadSVG").addEventListener("click", () => {
-  const svg = qrContainer.querySelector("svg");
-  if (!svg) return;
-  const serializer = new XMLSerializer();
-  const source = serializer.serializeToString(svg);
-  const blob = new Blob([source], { type: "image/svg+xml" });
+  // qrcodejs renders to canvas, so build a real vector SVG from the QR module matrix
+  if (!qr || !qr._oQRCode) return;
+  const matrix = qr._oQRCode;
+  const count = matrix.getModuleCount();
+  const size = 256;
+  const scale = size / count;
+  let rects = "";
+  for (let r = 0; r < count; r++) {
+    for (let c = 0; c < count; c++) {
+      if (matrix.isDark(r, c)) {
+        rects += `<rect x="${(c * scale).toFixed(2)}" y="${(r * scale).toFixed(2)}" width="${(scale + 0.1).toFixed(2)}" height="${(scale + 0.1).toFixed(2)}"/>`;
+      }
+    }
+  }
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">` +
+    `<rect width="${size}" height="${size}" fill="${currentTheme.bg}"/>` +
+    `<g fill="${currentTheme.fg}">${rects}</g></svg>`;
+  const blob = new Blob([svg], { type: "image/svg+xml" });
   const link = document.createElement("a");
   link.download = "qrcode.svg";
   link.href = URL.createObjectURL(blob);
   link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 2000);
 });
